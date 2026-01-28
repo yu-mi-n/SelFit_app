@@ -1,0 +1,39 @@
+/* =========================================
+   chart.css - 完全修正版
+   ========================================= */
+
+/* 0. 鉄壁の檻（新規追加） */
+/* これがグラフの「突き抜け」を物理的に阻止します */
+.chart-grid-lock {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  width: 100%;
+}
+
+/* 1. スクロール領域（窓） */
+.chart-scroll-wrapper {
+  display: block;
+  width: 100%;
+  
+  /* 横スクロール設定 */
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 5px;
+}
+
+/* 2. グラフ本体（中身） */
+.chart-body {
+  position: relative;
+  height: 300px;
+  margin: 0 auto;
+  min-width: 100%; 
+}
+
+/* 3. Canvasの強制設定 */
+.chart-body canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none !important; 
+}

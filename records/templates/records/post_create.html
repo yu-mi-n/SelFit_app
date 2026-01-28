@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/sns.css' %}">
+<script src="{% static 'js/post_create.js' %}"></script>
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        
+        <div class="sns-card form-card">
+            <div class="form-header d-flex align-items-center gap-2">
+                <i class="bi bi-megaphone-fill"></i> 投稿を作成
+            </div>
+            
+            <div class="card-body p-4">
+                <p class="text-muted small mb-4">
+                    今日の成果や気づきをシェアして、モチベーションを高めましょう！
+                </p>
+
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    {% if form.errors %}
+                        <div class="alert alert-danger rounded-3 border-0 shadow-sm">
+                            <i class="bi bi-exclamation-circle-fill me-2"></i>入力内容を確認してください。
+                        </div>
+                    {% endif %}
+
+                    <div class="mb-4">
+                        <label class="form-label">メッセージ</label>
+                        {{ form.content }}
+                        </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">画像（任意）</label>
+                        {{ form.image }}
+                    </div>
+
+                    <div class="privacy-box mb-4">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="fw-bold mb-1 text-dark"><i class="bi bi-shield-lock"></i> プライバシー設定</h6>
+                                <p class="text-muted small mb-0 mt-1">
+                                    <span id="privacy-status-text">
+                                        ユーザー名：{% if user.is_anonymous_account %}<strong>非公開</strong>{% else %}<strong>公開</strong>{% endif %} / 
+                                        アイコン：{% if user.hide_profile_image %}<strong>非表示</strong>{% else %}<strong>表示</strong>{% endif %}
+                                    </span>
+                                </p>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill bg-white" data-bs-toggle="modal" data-bs-target="#privacyModal">
+                                変更
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-3">
+                        <button type="submit" class="btn btn-gradient btn-lg">
+                            投稿する 🚀
+                        </button>
+                        <a href="{% url 'records:index' %}" class="btn btn-link text-secondary text-decoration-none text-center">
+                            キャンセル
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="privacyModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold">プライバシー設定</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body pt-4">
+                <form id="privacyForm">
+                    
+                    <div class="mb-3 p-3 bg-light rounded-3 d-flex justify-content-between align-items-center">
+                        <div class="me-3">
+                            <label class="fw-bold mb-0" for="modal_is_anonymous">名前を隠す（匿名）</label>
+                            <div class="small text-muted mt-1">ユーザー名を「匿名ユーザー」として表示します。</div>
+                        </div>
+                        <div class="form-check form-switch m-0">
+                            <input class="form-check-input cursor-pointer" type="checkbox" id="modal_is_anonymous" 
+                                   style="transform: scale(1.1);"
+                                   {% if user.is_anonymous_account %}checked{% endif %}>
+                        </div>
+                    </div>
+
+                    <div class="p-3 bg-light rounded-3 d-flex justify-content-between align-items-center">
+                        <div class="me-3">
+                            <label class="fw-bold mb-0" for="modal_hide_image">画像を非公開にする</label>
+                            <div class="small text-muted mt-1">プロフィールアイコンを人型シルエットに変更します。</div>
+                        </div>
+                        <div class="form-check form-switch m-0">
+                            <input class="form-check-input cursor-pointer" type="checkbox" id="modal_hide_image"
+                                   style="transform: scale(1.1);"
+                                   {% if user.hide_profile_image %}checked{% endif %}>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">キャンセル</button>
+                <button type="button" class="btn btn-gradient rounded-pill px-4" id="savePrivacyBtn" data-url="{% url 'accounts:update_privacy_api' %}">
+                    設定を保存
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

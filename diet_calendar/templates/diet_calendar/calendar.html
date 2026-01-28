@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'diet_calendar/css/calendar.css' %}?v=2026">
+<link rel="stylesheet" href="{% static 'diet_calendar/css/mission_modal.css' %}?v=1">
+
+<div class="d-flex flex-column align-items-center calendar-page-container">
+
+    <div class="d-flex justify-content-between align-items-center mb-2 w-100" style="max-width: 800px; padding: 0 10px;">
+        <a href="{% url 'diet_calendar:month' prev_year prev_month %}" class="btn btn-light border rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+            <i class="bi bi-chevron-left"></i>
+        </a>
+
+        <div class="text-center">
+            <h4 class="fw-bold m-0 text-dark" style="font-family: sans-serif;">
+                {{ current_year }}<span class="text-muted mx-1">/</span>{{ current_month }}
+            </h4>
+        </div>
+
+        <a href="{% url 'diet_calendar:month' next_year next_month %}" class="btn btn-light border rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+            <i class="bi bi-chevron-right"></i>
+        </a>
+    </div>
+
+    <div class="calendar-wrapper flex-grow-1">
+        {{ calendar }}
+    </div>
+
+</div>
+
+{# JSで動的にモーダルHTMLを読み込むためのコンテナ #}
+<div id="dynamicModalContainer"></div>
+
+<script src="{% static 'diet_calendar/js/calendar_logic.js' %}?v=2026"></script>
+
+{% endblock %}

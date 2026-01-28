@@ -1,0 +1,152 @@
+/* static/accounts/css/login.css */
+
+/* --- 共通変数 (SelFit Theme) --- */
+:root {
+    --brand-gradient: linear-gradient(135deg, #42e695 0%, #3bb2b8 100%);
+    --brand-color-main: #3bb2b8;
+    --brand-shadow: rgba(66, 230, 149, 0.4);
+    --text-dark: #2d3748;
+}
+
+/* --- ログインカード --- */
+.login-card {
+    border: none;
+    border-radius: 24px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    background-color: #ffffff;
+    overflow: hidden;
+    transition: transform 0.2s;
+}
+
+.login-card:hover {
+    transform: translateY(-2px);
+}
+
+.card-body {
+    padding: 3rem 2.5rem;
+    text-align: center;
+}
+
+/* --- フォーム行のレイアウト --- */
+.card-body form .mb-4 {
+    display: flex;           /* 横並び */
+    align-items: center;     /* 上下中央 */
+    justify-content: center; /* ★画面の左右中央に配置 */
+    gap: 10px;               /* ラベルと入力欄の間隔 */
+    width: 100%;             /* 横幅いっぱいに使う */
+}
+
+/* ラベル (左側に配置) */
+.form-label, label {
+    font-weight: 700;
+    color: var(--text-dark);
+    font-size: 0.95rem;
+    margin-bottom: 0;
+    padding: 0;
+    
+    /* ★修正: 幅固定を解除し、文字幅に合わせる */
+    width: auto;            
+    flex-shrink: 0;         /* 縮まないようにする */
+    text-align: right;      /* 文字を右寄せ */
+}
+
+/* 入力フィールド */
+.form-control {
+    border: 2px solid #edf2f7;
+    border-radius: 12px;
+    padding: 12px 15px;
+    background-color: #fcfcfc;
+    transition: all 0.2s;
+    font-size: 1rem;
+    color: var(--text-dark);
+    
+    /* 幅を固定 */
+    width: 220px;           
+    flex-grow: 0;           
+    
+    text-align: left; 
+}
+
+.form-control:focus {
+    border-color: var(--brand-color-main);
+    background-color: #ffffff;
+    box-shadow: 0 0 0 4px rgba(66, 230, 149, 0.15);
+    outline: none;
+}
+
+/* --- ボタン --- */
+.btn-gradient-login {
+    background: var(--brand-gradient);
+    border: none;
+    color: white;
+    font-weight: 800;
+    padding: 14px;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 15px var(--brand-shadow);
+    transition: all 0.3s;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.btn-gradient-login:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px var(--brand-shadow);
+    opacity: 0.95;
+    color: white;
+}
+
+/* --- リンク類 --- */
+.login-footer-link {
+    color: #718096;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+.login-footer-link:hover {
+    color: var(--brand-color-main);
+}
+.login-footer-link strong {
+    color: var(--brand-color-main);
+}
+
+@media (max-width: 420px) {
+    
+    /* カードの左右の余白を少し詰めて、表示領域を確保 */
+    .card-body {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    .card-body form .mb-4 {
+        /* ラベルと入力欄の間隔を小さくする (10px -> 4px) */
+        gap: 4px;
+        
+        /* 画面端までコンテンツを使えるようにする */
+        width: 100%;
+    }
+
+    /* ラベルの設定 */
+    .form-label, label {
+        /* ラベルの幅は維持し、勝手に縮まないようにする */
+        flex-shrink: 0;
+        /* フォントを少しだけ小さくして圧迫感を減らす */
+        font-size: 0.85rem;
+        /* ラベル幅を微調整（必要であれば） */
+        width: 100px;
+    }
+
+    /* 入力欄の設定 */
+    .form-control {
+        /* ★重要: 固定幅を解除し、柔軟に伸縮させる */
+        width: auto;
+        
+        /* 余ったスペースを埋める（かつ、幅が足りない時は縮む） */
+        flex: 1;
+        
+        /* これがないとFlexアイテムはコンテンツサイズ以下に縮まないことがある */
+        min-width: 0; 
+    }
+}

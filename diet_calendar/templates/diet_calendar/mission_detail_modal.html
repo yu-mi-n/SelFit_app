@@ -1,0 +1,80 @@
+{% load static %}
+
+<div class="modal fade" id="missionDetailModal-{{ record.id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 24px; overflow: hidden;">
+            
+            <div class="card-header-brand d-flex justify-content-between align-items-center py-3 px-4"
+                 style="background: linear-gradient(135deg, #42e695 0%, #3bb2b8 100%);">
+                <h5 class="modal-title fw-bold text-white" style="text-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <i class="bi bi-trophy-fill me-2"></i>達成ミッション
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body p-4 bg-light">
+                
+                <div class="text-center mb-4">
+                    <span class="badge bg-white text-secondary shadow-sm px-4 py-2 rounded-pill border-0" style="font-size: 0.9rem; letter-spacing: 0.05em;">
+                        <i class="bi bi-calendar-check me-1"></i>{{ record.date|date:"Y年n月j日" }}
+                    </span>
+                </div>
+
+                {% with mission_logs=record.get_mission_logs %}
+                {% if mission_logs %}
+                    <div class="list-group shadow-sm rounded-3 overflow-hidden border-0">
+                        {% for log in mission_logs|dictsort:"mission.difficulty" %}
+                            <div class="list-group-item border-0 border-bottom p-3 d-flex align-items-center bg-white">
+                                <div class="me-3 d-flex align-items-center justify-content-center rounded-circle text-white fw-bold shadow-sm"
+                                     style="width: 44px; height: 44px; font-size: 0.9rem;
+                                     background: {% if log.mission.difficulty == 1 %}linear-gradient(135deg, #42e695, #3bb2b8){% elif log.mission.difficulty == 2 %}linear-gradient(135deg, #3bb2b8, #2d8a8e){% else %}linear-gradient(135deg, #ffb347, #ffcc33){% endif %};">
+                                    Lv{{ log.mission.difficulty }}
+                                </div>
+                                
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1 fw-bold text-dark" style="font-size: 0.95rem;">{{ log.mission.title }}</h6>
+                                    {% if log.comment %}
+                                        <div class="small text-muted bg-light p-2 rounded-3 mt-1 border-start border-3 border-info">
+                                            <i class="bi bi-chat-quote me-1"></i>{{ log.comment }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="text-end ms-2">
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill small px-2 py-1">
+                                        +{% if log.mission.difficulty == 1 %}5{% elif log.mission.difficulty == 2 %}7{% else %}10{% endif %} exp
+                                    </span>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    {% if mission_logs.count >= 3 %}
+                        <div class="text-center mt-4">
+                            <div class="d-inline-block p-3 rounded-4 bg-white shadow-sm border border-2 border-warning position-relative overflow-hidden">
+                                <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(45deg, rgba(255,255,255,0) 40%, rgba(255,215,0,0.1) 50%, rgba(255,255,255,0) 60%); pointer-events: none;"></div>
+                                <h4 class="mb-1 text-warning fw-bold" style="text-shadow: 1px 1px 0 rgba(0,0,0,0.1);">👑 Perfect!</h4>
+                                <small class="text-secondary fw-bold" style="font-size: 0.8rem;">全てのミッションを達成しました</small>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="bi bi-emoji-neutral fs-1 text-muted mb-2"></i>
+                        <p class="text-muted">この日の達成データが見つかりませんでした。</p>
+                    </div>
+                {% endif %}
+                {% endwith %}
+
+            </div>
+
+            <div class="modal-footer border-top-0 pt-0 bg-light pb-4 justify-content-center">
+                <button type="button" class="btn btn-secondary rounded-pill px-5 shadow-sm border-0 btn-hover-effect" data-bs-dismiss="modal" style="background-color: #6c757d;">
+                    閉じる
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>

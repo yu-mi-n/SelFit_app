@@ -1,0 +1,158 @@
+/* --- 共通変数 (SelFit Theme) --- */
+:root {
+    --brand-gradient: linear-gradient(135deg, #42e695 0%, #3bb2b8 100%);
+    --brand-color-main: #3bb2b8;
+    --brand-shadow: rgba(66, 230, 149, 0.4);
+    --text-dark: #2d3748;
+}
+
+/* --- ログインカード --- */
+.login-card {
+    border: none;
+    border-radius: 24px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    background-color: #ffffff;
+    overflow: hidden;
+    transition: transform 0.2s;
+}
+
+.login-card:hover {
+    transform: translateY(-2px);
+}
+
+.card-body {
+    padding: 3rem 2.5rem;
+    text-align: center;
+}
+
+/* --- フォーム行のレイアウト --- */
+.card-body form .mb-4 {
+    display: flex;           /* 横並び */
+    align-items: center;     /* 上下中央 */
+    justify-content: center; /* 画面の左右中央に配置 */
+    gap: 10px;               /* ラベルと入力欄の間隔 */
+    width: 100%;
+}
+
+/* ラベル (左側に配置) */
+.form-label, label {
+    font-weight: 700;
+    color: var(--text-dark);
+    font-size: 0.95rem;
+    margin-bottom: 0;
+    padding: 0;
+    
+    width: 130px;           
+    flex-shrink: 0;         
+    text-align: left;       
+    line-height: 1.4;       
+}
+
+.input-wrapper {
+    width: 220px;           /* 固定幅 */
+    flex-grow: 0;
+    position: relative;     /* アイコン配置の基準 */
+}
+
+/* 入力フィールド */
+.form-control {
+    border: 2px solid #edf2f7;
+    border-radius: 12px;
+    padding: 12px 35px 12px 15px; /* 右側にアイコン用の余白(35px)を確保 */
+    background-color: #fcfcfc;
+    transition: all 0.2s;
+    font-size: 1rem;
+    color: var(--text-dark);
+    
+    /* 幅の設定は親(.input-wrapper)に任せるため 100% に */
+    width: 100%;
+    text-align: left; 
+}
+
+.form-control:focus {
+    border-color: var(--brand-color-main);
+    background-color: #ffffff;
+    box-shadow: 0 0 0 4px rgba(66, 230, 149, 0.15);
+    outline: none;
+}
+
+
+
+/* --- ボタン --- */
+.btn-gradient-login {
+    background: var(--brand-gradient);
+    border: none;
+    color: white;
+    font-weight: 800;
+    padding: 14px;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 15px var(--brand-shadow);
+    transition: all 0.3s;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.btn-gradient-login:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px var(--brand-shadow);
+    opacity: 0.95;
+    color: white;
+}
+
+/* --- リンク類 --- */
+.login-footer-link {
+    color: #718096;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+.login-footer-link:hover {
+    color: var(--brand-color-main);
+}
+.login-footer-link strong {
+    color: var(--brand-color-main);
+}
+
+@media (max-width: 991px) {
+    .card-body {
+        padding: 2rem 1rem;
+    }
+
+    .form-label, label {
+        width: 110px;
+        font-size: 0.9rem;
+    }
+    
+    /* ★修正: ラッパーの幅を調整 */
+    .input-wrapper {
+        width: 200px;
+    }
+}
+
+@media (max-width: 420px) {
+    .card-body {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    .card-body form .mb-4 {
+        gap: 4px;
+        width: 100%;
+    }
+
+    .form-label, label {
+        flex-shrink: 0;
+        font-size: 0.85rem;
+        width: 100px;
+    }
+
+    /* ★修正: ラッパーを可変にする */
+    .input-wrapper {
+        width: auto;
+        flex: 1;
+        min-width: 0; 
+    }
+}

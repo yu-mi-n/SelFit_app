@@ -1,0 +1,232 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/sns.css' %}">
+<script src="{% static 'js/post_check.js' %}"></script>
+<script src="{% static 'js/like.js' %}"></script>
+
+<input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+
+{% with mission_text="今日のミッションを3つ全て達成しました！💯✨" %} <!-- ミッションコンプリート -->
+
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6"> 
+        <div class="d-flex justify-content-between align-items-center mb-4 px-2">
+            <div>
+                <h2 class="fw-bold m-0 text-dark">Timeline</h2>
+                <p class="text-muted small m-0">みんなの頑張りをチェック！</p>
+            </div>
+            
+            <div class="position-relative js-post-button-wrapper">
+                <a href="{% url 'records:post_create' %}?initial_text={{ mission_text|urlencode }}" 
+                   class="btn btn-gradient d-flex align-items-center gap-2 js-post-check"
+                   data-posted="{{ has_posted_today|yesno:'true,false' }}"
+                   data-mission="{{ is_mission_cleared|yesno:'true,false' }}">
+                    <i class="bi bi-pencil-square"></i> <span class="d-none d-sm-inline">投稿する</span>
+                </a>
+                
+                <div class="js-error-message sns-alert-popup position-absolute top-100 end-0 mt-2 px-3 py-2 rounded small text-nowrap" 
+                     style="display: none; z-index: 10; font-size: 0.8rem;">
+                </div>
+            </div>
+        </div>
+
+        <ul class="nav nav-pills-custom nav-fill mb-4">
+            <li class="nav-item">
+                <a class="nav-link {% if tab == 'all' %}active{% endif %}" href="?tab=all">
+                    🌍 みんなの投稿
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if tab == 'following' %}active{% endif %}" href="?tab=following">
+                    👀 フォロー中
+                </a>
+            </li>
+        </ul>
+
+        {% for post in posts %}
+        <div class="sns-card">
+            <div class="sns-card-header d-flex align-items-center justify-content-between">
+                
+                <div class="d-flex align-items-center gap-3">
+                    {% if not post.user.is_anonymous_account and not post.user.hide_profile_image %}
+                        <a href="{% url 'accounts:profile' post.user.id %}" class="text-decoration-none">
+                            {% if post.user.profile_image %}
+                                <img src="{{ post.user.profile_image.url }}" class="user-avatar" alt="icon" loading="lazy" decoding="async">
+                            {% else %}
+                                <div class="user-avatar bg-light d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-person text-secondary fs-5"></i>
+                                </div>
+                            {% endif %}
+                        </a>
+                    {% else %}
+                        <div class="user-avatar bg-light d-flex align-items-center justify-content-center">
+                            <span style="font-size: 1.2rem;">👤</span>
+                        </div>
+                    {% endif %}
+
+                    <div>
+                        {% if post.user.is_anonymous_account %}
+                            <div class="user-name text-muted">匿名ユーザー</div>
+                        {% else %}
+                            <div class="d-flex align-items-center gap-2">
+                                <a href="{% url 'accounts:profile' post.user.id %}" class="text-decoration-none user-name">
+                                    {{ post.user.username }}
+                                </a>
+                                <span class="badge rounded-pill border-0 shadow-sm px-2" 
+                                      style="background: linear-gradient(135deg, #42e695 0%, #3bb2b8 100%); font-size: 0.7rem;">
+                                    Lv.{{ post.user.level }}
+                                </span>
+                            </div>
+                        {% endif %}
+                        <div class="post-date">{{ post.created_at|date:"Y/m/d H:i" }}</div>
+                    </div>
+                </div>
+
+                {% if post.user == user %}
+                    <a href="{% url 'records:post_edit' post.id %}" class="btn-edit-post">
+                        <i class="bi bi-pencil-fill" style="font-size: 0.7rem;"></i> 編集
+                    </a>
+                {% endif %}
+            </div>
+
+            <div class="sns-card-body">
+                <p class="post-content">{{ post.content }}</p>
+                
+                {% if post.image %}
+                    <div class="post-image-wrapper">
+                        <img src="{{ post.image.url }}" class="post-image" alt="投稿画像" loading="lazy" decoding="async">
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="sns-card-footer">
+                <button type="button" 
+                        class="btn-like js-like-btn text-decoration-none border-0 bg-transparent p-0 d-flex align-items-center gap-1"
+                        data-url="{% url 'records:like_post' post.id %}">
+                    
+                    {% if post.id in liked_post_ids %}
+                        <i class="bi bi-heart-fill text-danger fs-4"></i>
+                    {% else %}
+                        <i class="bi bi-heart text-secondary fs-4"></i>
+                    {% endif %}
+                    
+                    <span class="js-like-count {% if post.id in liked_post_ids %}fw-bold text-dark{% else %}text-secondary{% endif %}">
+                        {{ post.likes.count }}
+                    </span>
+                </button>
+
+            </div>
+
+        </div>
+        {% empty %}
+            <div class="text-center py-5">
+                <div class="mb-3">
+                    <i class="bi bi-chat-square-dots text-light" style="font-size: 4rem;"></i>
+                </div>
+                <h5 class="text-muted fw-bold">まだ投稿がありません</h5>
+                
+                {% if tab == 'following' %}
+                    <p class="text-muted small">「みんなの投稿」から気になるユーザーを<br>フォローしてみましょう！</p>
+                    <a href="?tab=all" class="btn btn-outline-secondary rounded-pill px-4 mt-2">みんなの投稿へ</a>
+                {% else %}
+                    <p class="text-muted small">あなたの頑張りをシェアして<br>みんなと励まし合いましょう！</p>
+                    <a href="{% url 'records:post_create' %}" 
+                       class="btn btn-gradient mt-3 js-post-check"
+                       data-posted="{{ has_posted_today|yesno:'true,false' }}"
+                       data-mission="{{ is_mission_cleared|yesno:'true,false' }}">
+                        最初の投稿をする
+                    </a>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<a href="{% url 'records:post_create' %}" 
+   class="btn btn-gradient d-flex align-items-center justify-content-center shadow-lg d-md-none js-post-check" 
+   style="position: fixed; bottom: 80px; right: 20px; width: 56px; height: 56px; border-radius: 50%; z-index: 100;"
+   data-posted="{{ has_posted_today|yesno:'true,false' }}"
+   data-mission="{{ is_mission_cleared|yesno:'true,false' }}">
+    <i class="bi bi-pencil-square fs-4"></i>
+</a>
+
+{% if posts.has_other_pages %}
+        <nav aria-label="Page navigation" class="mt-5 mb-5">
+            <ul class="pagination justify-content-center sns-pagination">
+                
+                {% if posts.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link rounded-circle d-flex align-items-center justify-content-center mx-1 shadow-sm" 
+                           href="?tab={{ tab }}&page={{ posts.previous_page_number }}" aria-label="Previous" 
+                           style="width: 40px; height: 40px;">
+                            <i class="bi bi-chevron-left"></i>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link rounded-circle d-flex align-items-center justify-content-center mx-1 border-0 bg-transparent text-muted" 
+                              style="width: 40px; height: 40px;">
+                            <i class="bi bi-chevron-left"></i>
+                        </span>
+                    </li>
+                {% endif %}
+
+                {% for num in posts.paginator.page_range %}
+                    {% if posts.number == num %}
+                        <li class="page-item active">
+                            <span class="page-link rounded-circle d-flex align-items-center justify-content-center mx-1 shadow" 
+                                  style="width: 40px; height: 40px;">
+                                {{ num }}
+                            </span>
+                        </li>
+                    {% elif num > posts.number|add:'-3' and num < posts.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link rounded-circle d-flex align-items-center justify-content-center mx-1 shadow-sm" 
+                               href="?tab={{ tab }}&page={{ num }}" 
+                               style="width: 40px; height: 40px;">
+                                {{ num }}
+                            </a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if posts.has_next %}
+                    <li class="page-item">
+                        <a class="page-link rounded-circle d-flex align-items-center justify-content-center mx-1 shadow-sm" 
+                           href="?tab={{ tab }}&page={{ posts.next_page_number }}" aria-label="Next"
+                           style="width: 40px; height: 40px;">
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link rounded-circle d-flex align-items-center justify-content-center mx-1 border-0 bg-transparent text-muted" 
+                              style="width: 40px; height: 40px;">
+                            <i class="bi bi-chevron-right"></i>
+                        </span>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+
+    </div>
+</div>
+
+<div class="js-post-button-wrapper" style="position: fixed; bottom: 80px; right: 20px; z-index: 100;">
+    <a href="{% url 'records:post_create' %}?initial_text={{ mission_text|urlencode }}" 
+       class="btn btn-gradient d-flex align-items-center justify-content-center shadow-lg d-md-none js-post-check" 
+       style="width: 56px; height: 56px; border-radius: 50%;"
+       data-posted="{{ has_posted_today|yesno:'true,false' }}"
+       data-mission="{{ is_mission_cleared|yesno:'true,false' }}">
+        <i class="bi bi-pencil-square fs-4"></i>
+    </a>
+    <div class="js-error-message sns-alert-popup position-absolute top-50 end-100 me-3 px-3 py-2 rounded shadow small text-nowrap" 
+         style="display: none; transform: translateY(-50%); font-size: 0.8rem;">
+    </div>
+</div>
+
+{% endwith %}
+{% endblock %}

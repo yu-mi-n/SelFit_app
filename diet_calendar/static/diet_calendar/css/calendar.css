@@ -1,0 +1,330 @@
+/* static/diet_calendar/css/calendar.css */
+
+/* =========================================
+   1. カレンダー全体設定
+   ========================================= */
+
+.calendar-page-container {
+    width: 100%;
+    /* ★修正: 高さを固定せず、最低限の高さを指定して伸びるようにする */
+    height: auto; 
+    min-height: calc(100vh - 120px);
+    
+    /* 下端がギリギリにならないよう余白を追加 */
+    padding-bottom: 40px; 
+    
+    /* コンテナ内スクロールではなく、ページ全体のスクロールに任せる */
+    overflow: visible; 
+}
+
+.calendar-wrapper {
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.06);
+    border: 1px solid rgba(0,0,0,0.02);
+    width: 100%;
+    
+    /* ★修正: 親に合わせて伸びる設定。固定しない */
+    height: auto; 
+    /* テーブルの均等配置を維持するために最低高さを確保 */
+    min-height: calc(100vh - 160px); 
+    
+    /* ★重要: はみ出しを隠さない（影やコンテンツを切らない） */
+    overflow: visible; 
+    
+    font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', sans-serif;
+    display: flex;
+    flex-direction: column;
+}
+
+.calendar-table {
+    width: 100%;
+    /* ラッパーの高さに合わせて広げる（min-heightが効く） */
+    height: 100%; 
+    table-layout: fixed;
+    border-collapse: collapse;
+    
+    /* テーブル自体も伸びるように */
+    flex-grow: 1;
+}
+
+/* 曜日ヘッダー */
+.calendar-table th {
+    text-align: center;
+    padding: 8px 0;
+    background-color: #ffffff;
+    color: #b0b8c1;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    border-bottom: 2px solid #f5f7fa;
+    height: 40px;
+}
+.calendar-table th.sun { color: #ff6b6b; }
+.calendar-table th.sat { color: #4dabf7; }
+
+/* セル（td） */
+.calendar-table td {
+    vertical-align: top;
+    border-right: 1px solid #f8f9fa;
+    border-bottom: 1px solid #f8f9fa;
+    padding: 0;
+    /* 重要: この設定により、テーブルの高さ(min-height)を
+       各行が均等に分け合う挙動になります。
+       コンテンツが増えてテーブルが伸びれば、行も均等に伸びます。
+    */
+    height: 1px; 
+    transition: background-color 0.2s ease;
+}
+.calendar-table td:hover { background-color: #fafbfc; }
+.calendar-table td.today {
+    background-color: #fff8f8;
+    box-shadow: inset 0 0 0 2px #ff6b6b;
+    position: relative;
+    z-index: 1;
+}
+.calendar-table .noday { background-color: #fcfcfc; }
+
+
+/* =========================================
+   2. セル内部のレイアウト（JS生成要素）
+   ========================================= */
+
+.cell-inner-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    width: 100%;
+    
+    /* 親(td)の高さに追従 */
+    height: 100%; 
+    min-height: 0;
+    
+    padding: 4px;
+    gap: 2px;
+    justify-content: flex-start;
+    
+    /* 基本は隠すが、Wrapperが伸びるので問題ない */
+    overflow: hidden; 
+}
+
+/* 1. 日付 */
+.date-number {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #4a5568;
+    margin-bottom: 2px;
+    padding-left: 4px;
+    align-self: flex-start;
+    line-height: 1.2;
+}
+.calendar-table .sun .date-number { color: #ff6b6b; }
+.calendar-table .sat .date-number { color: #4dabf7; }
+
+/* 2. コンディションアイコン */
+.condition-icons {
+    display: flex;
+    justify-content: center;
+    gap: 2px; 
+    font-size: 0.85rem;
+    line-height: 1;
+    min-height: 16px;
+    margin-bottom: 2px;
+    filter: drop-shadow(0 1px 1px rgba(0,0,0,0.1));
+    flex-shrink: 0;
+}
+.condition-icons > * { margin: 0 !important; }
+
+/* 3. バッジ・ジュエルエリア */
+.calendar-content {
+    display: flex;
+    flex-direction: column; /* PCは縦並び */
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    width: 100%;
+    margin-top: 2px;
+    flex-shrink: 0;
+    
+    /* PCでの高さを確保（週の高さを揃えるため） */
+    min-height: 56px; 
+}
+.calendar-content a { text-decoration: none; color: inherit; }
+
+.calendar-content div {
+    text-align: center !important;
+    width: 100% !important; 
+    margin: 0 !important;
+    display: block;
+    color: #f1c40f; 
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.calendar-content .badge {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    
+    /* PCでのサイズ */
+    min-height: 24px; 
+    padding: 2px 10px !important;
+    border-radius: 99px !important; 
+    
+    box-shadow: 0 4px 6px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.4);
+    backdrop-filter: blur(4px);
+    vertical-align: middle;
+    font-weight: 600;
+    font-size: 0.75rem;
+    
+    margin: 2px 0 !important;
+}
+
+.calendar-content .bg-success {
+    background: linear-gradient(135deg, #42e695 0%, #3bb2b8 100%) !important;
+    border: none !important;
+    color: #fff !important;
+}
+.calendar-content .bg-warning {
+    background: linear-gradient(135deg, #f09819 0%, #edde5d 100%) !important;
+    border: none !important;
+    color: #fff !important; 
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+
+/* 4. 体重・体脂肪率 */
+.weight-text, .fat-text {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #718096;
+    line-height: 1.2;
+    white-space: nowrap;
+    margin-top: auto; 
+}
+.weight-text { color: #2d3748; } 
+.fat-text { color: #a0aec0; margin-top: 0; }
+
+.weight-text::after { content: 'kg'; font-size: 0.75em; color: #cbd5e0; margin-left: 1px; font-weight: normal; }
+.fat-text::after { content: '%'; font-size: 0.75em; margin-left: 1px; font-weight: normal; }
+
+
+/* =========================================
+   3. スマホ・タブレット用デザイン (991px以下)
+   ========================================= */
+
+@media (max-width: 991px) {
+    .calendar-wrapper {
+        border-radius: 0;
+        box-shadow: none;
+        /* スマホでも最低限の高さを確保しつつ伸びるように */
+        min-height: calc(100vh - 160px);
+    }
+    
+    .cell-inner-wrapper {
+        padding: 4px;
+        gap: 2px;
+        border-bottom: 1px solid #f8f9fa;
+    }
+    
+    /* 日付 */
+    .date-number { font-size: 1.0rem; }
+    
+    /* バッジエリア（横並び） */
+    .calendar-content {
+        flex-direction: row !important; 
+        align-items: center !important;
+        gap: 4px !important;
+        min-height: 30px; 
+    }
+
+    .calendar-content div { width: auto !important; }
+
+    /* バッジの完全アイコン化 */
+    .calendar-content .badge,
+    .calendar-content a.badge,
+    .calendar-content span.badge {
+        font-size: 0 !important;
+        color: transparent !important;
+        text-indent: 0 !important;
+        
+        width: 24px !important;
+        height: 24px !important;
+        min-height: 24px !important; 
+        
+        border-radius: 50% !important;
+        padding: 0 !important;
+        border: 2px solid #fff !important;
+        box-shadow: 0 3px 6px rgba(0,0,0,0.15), inset 0 -2px 4px rgba(0,0,0,0.1);
+        
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        margin: 0 !important;
+    }
+    
+    .calendar-content .badge::before {
+        font-size: 14px; 
+        color: #fff; 
+        display: block; 
+        line-height: 1;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    }
+    
+    .calendar-content .bg-success::before { content: '📝'; }
+    .calendar-content .bg-warning::before { content: '👑'; }
+}
+
+/* =========================================
+   4. モーダルデザイン（変更なし）
+   ========================================= */
+#recordDetailModal .modal-content {
+    border-radius: 24px;
+    border: none;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    background: #ffffff;
+    overflow: hidden;
+}
+#recordDetailModal .modal-header {
+    background: #ffffff;
+    border-bottom: 1px solid #f0f0f0;
+    padding: 16px 24px;
+}
+#recordDetailModal .modal-title {
+    color: #2d3748;
+    font-weight: 800;
+    font-size: 1.1rem;
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+#recordDetailModal .modal-title::before {
+    content: '';
+    display: block;
+    width: 6px;
+    height: 24px;
+    background: #ff6b6b;
+    border-radius: 4px;
+}
+#recordDetailModal .btn-close {
+    background-color: #f7fafc;
+    border-radius: 50%;
+    padding: 10px;
+    transition: all 0.2s;
+    opacity: 1;
+}
+#recordDetailModal .btn-close:hover {
+    background-color: #edf2f7;
+    transform: rotate(90deg);
+}
+#recordDetailModal .modal-body {
+    padding: 0;
+}
+
+#recordDetailModal a.btn:not(.btn-close) {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 100%) !important;
+    border: none !important;
+    color: white !important;
+    border-radius: 50px !important;
+    box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+}

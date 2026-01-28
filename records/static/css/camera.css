@@ -1,0 +1,4 @@
+/* インカメなどを鏡像表示するためのクラス */
+.mirror-flip {
+    transform: scaleX(-1);
+}

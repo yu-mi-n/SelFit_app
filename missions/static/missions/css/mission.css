@@ -1,0 +1,137 @@
+/* static/missions/css/mission.css */
+
+/* 背景色（アプリ共通） */
+body {
+    background-color: #f8f9fa;
+}
+
+/* カードデザイン */
+.mission-card {
+    border: none;
+    border-radius: 24px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.06);
+    overflow: hidden;
+    background: #ffffff;
+    animation: slideUp 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* ヘッダー（成功の緑グラデーション） */
+.mission-header {
+    background: linear-gradient(135deg, #42e695 0%, #3bb2b8 100%);
+    color: white;
+    padding: 30px 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+/* ヘッダー内のキラキラ装飾（背景） */
+.mission-header::before,
+.mission-header::after {
+    content: '';
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+    z-index: 0;
+}
+.mission-header::before { top: -20px; left: -20px; }
+.mission-header::after { bottom: -40px; right: -10px; }
+
+/* アイコンラッパー */
+.mission-icon-wrapper {
+    width: 80px;
+    height: 80px;
+    background: rgba(255,255,255,0.25);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 15px;
+    backdrop-filter: blur(4px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    position: relative;
+    z-index: 1;
+    
+    /* ぽよよんと弾むアニメーション */
+    animation: bounce 1s infinite;
+}
+
+.mission-title-text {
+    font-weight: 800;
+    font-size: 1.4rem;
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* ボディ部分 */
+.mission-body {
+    padding: 30px 24px;
+}
+
+.mission-name {
+    font-weight: 700;
+    color: #2d3748;
+    margin-bottom: 8px;
+}
+
+.mission-desc {
+    color: #718096;
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+/* 入力フォーム */
+.form-label {
+    font-weight: 700;
+    color: #4a5568;
+    font-size: 0.9rem;
+}
+.form-control {
+    border: 2px solid #edf2f7;
+    border-radius: 12px;
+    padding: 12px;
+    background-color: #fcfcfc;
+    transition: all 0.2s;
+}
+.form-control:focus {
+    border-color: #42e695;
+    box-shadow: 0 0 0 3px rgba(66, 230, 149, 0.1);
+    background-color: #ffffff;
+}
+
+/* 達成ボタン */
+.btn-complete {
+    background: linear-gradient(135deg, #42e695 0%, #3bb2b8 100%);
+    border: none;
+    color: white;
+    font-weight: 700;
+    border-radius: 50px;
+    padding: 14px 30px;
+    box-shadow: 0 4px 15px rgba(66, 230, 149, 0.4);
+    transition: all 0.3s;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+.btn-complete:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(135deg, #5df0a8 0%, #4cc2c8 100%);
+    box-shadow: 0 8px 25px rgba(66, 230, 149, 0.5);
+    color: white;
+}
+
+/* アニメーション定義 */
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}

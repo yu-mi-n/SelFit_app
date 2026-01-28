@@ -1,0 +1,256 @@
+/* static/records/css/sns.css */
+
+/* =========================================
+   SNS全体共通設定
+   ========================================= */
+body {
+    background-color: #f8f9fa;
+}
+
+/* 共通カードデザイン */
+.sns-card {
+    background: #ffffff;
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+    transition: transform 0.2s, box-shadow 0.2s;
+    overflow: hidden;
+    margin-bottom: 24px;
+}
+
+.sns-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+}
+
+/* =========================================
+   タイムライン (post_list.html)
+   ========================================= */
+
+/* タブナビゲーション */
+.nav-pills-custom {
+    background: #ffffff;
+    padding: 6px;
+    border-radius: 50px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    display: flex;
+    gap: 4px;
+}
+
+.nav-pills-custom .nav-link {
+    border-radius: 50px;
+    color: #718096;
+    font-weight: 600;
+    transition: all 0.3s;
+    padding: 10px 20px;
+}
+
+/* ★修正: タブのアクティブ色を「緑グラデーション」に変更 */
+.nav-pills-custom .nav-link.active {
+    background: linear-gradient(135deg, #42e695 0%, #3bb2b8 100%) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(66, 230, 149, 0.4);
+}
+
+/* 投稿カードヘッダー */
+.sns-card-header {
+    background: #ffffff;
+    padding: 16px 20px;
+    border-bottom: 1px solid #f7fafc;
+}
+
+.user-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.user-name {
+    font-weight: 700;
+    color: #2d3748;
+    font-size: 0.95rem;
+}
+
+.post-date {
+    font-size: 0.75rem;
+    color: #a0aec0;
+}
+
+/* 投稿本文 */
+.sns-card-body {
+    padding: 16px 20px;
+}
+.post-content {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #4a5568;
+    white-space: pre-wrap;
+}
+
+/* 投稿画像 */
+.post-image-wrapper {
+    margin-top: 12px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #edf2f7;
+}
+.post-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.3s;
+}
+
+/* フッター（いいねボタンなど） */
+.sns-card-footer {
+    background: #ffffff;
+    padding: 12px 20px;
+    border-top: 1px solid #f7fafc;
+    display: flex;
+    align-items: center;
+}
+
+.btn-like {
+    border: none;
+    background: transparent;
+    padding: 8px 12px;
+    border-radius: 50px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.btn-like:hover {
+    background-color: #fff5f5;
+}
+.btn-like:active {
+    transform: scale(0.9);
+}
+
+
+/* =========================================
+   投稿作成・編集 (post_create / edit)
+   ========================================= */
+
+.form-card {
+    border: none;
+    border-radius: 24px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.06);
+    overflow: hidden;
+}
+
+/* ヘッダーも緑に変更 */
+.form-header {
+    background: linear-gradient(135deg, #42e695 0%, #3bb2b8 100%);
+    color: white;
+    padding: 20px 24px;
+    font-weight: 700;
+}
+
+.form-label {
+    font-weight: 700;
+    color: #4a5568;
+    font-size: 0.9rem;
+}
+
+.form-control {
+    border: 2px solid #edf2f7;
+    border-radius: 12px;
+    padding: 12px;
+    transition: all 0.2s;
+    background-color: #fcfcfc;
+}
+.form-control:focus {
+    border-color: #42e695; /* フォーカス色も緑系に */
+    box-shadow: 0 0 0 3px rgba(66, 230, 149, 0.1);
+    background-color: #ffffff;
+}
+
+.privacy-box {
+    background-color: #f8fdf9; 
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 16px;
+}
+
+
+/* ★修正: メインボタンを「緑グラデーション」に変更 */
+.btn-gradient {
+    background: linear-gradient(135deg, #42e695 0%, #3bb2b8 100%) !important;
+    border: none;
+    color: white;
+    font-weight: 700;
+    border-radius: 50px;
+    padding: 12px 30px;
+    box-shadow: 0 4px 15px rgba(66, 230, 149, 0.4);
+    transition: all 0.3s;
+}
+.btn-gradient:hover {
+    transform: translateY(-2px);
+    /* ホバー時は少し明るく */
+    background: linear-gradient(135deg, #5df0a8 0%, #4cc2c8 100%) !important;
+    box-shadow: 0 8px 20px rgba(66, 230, 149, 0.5);
+    color: white;
+}
+
+
+/* ★追加: 警告メッセージ用のスタイル（元のピンクグラデーションを使用） */
+.sns-alert-popup {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 100%) !important;
+    color: #ffffff !important;
+    box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4) !important;
+    border: none !important;
+    font-weight: 700;
+}
+
+/* ★追加: 投稿カード内の「編集」ボタン */
+.btn-edit-post {
+    color: #718096;            /* 文字色は落ち着いたグレー */
+    background-color: #f7fafc; /* 背景は薄いグレー */
+    border: 1px solid #e2e8f0; /* 薄い枠線 */
+    border-radius: 50px;       /* 丸ボタン */
+    padding: 6px 16px;         /* 程よい大きさ */
+    font-size: 0.8rem;
+    font-weight: 700;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;                  /* アイコンと文字の間隔 */
+    text-decoration: none;
+}
+
+.btn-edit-post:hover {
+    background-color: #edf2f7;
+    color: #2d3748;
+    transform: translateY(-1px); /* ホバーで少し浮く */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+/* ★追加: ページネーションのデザイン */
+.sns-pagination .page-link {
+    color: #718096;
+    border: none;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.sns-pagination .page-link:hover {
+    background-color: #f7fafc;
+    color: #42e695; /* ホバー時は緑 */
+    transform: translateY(-1px);
+}
+
+.sns-pagination .page-item.active .page-link {
+    /* アクティブ時は緑グラデーション */
+    background: linear-gradient(135deg, #42e695 0%, #3bb2b8 100%) !important;
+    color: white !important;
+    border: none;
+}
+
+.sns-pagination .page-item.disabled .page-link {
+    background-color: transparent;
+    color: #cbd5e0;
+}

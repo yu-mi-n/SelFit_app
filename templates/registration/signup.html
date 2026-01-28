@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/account.css' %}">
+
+<style>
+    /* ソフトなエラーアイコン */
+    .error-icon-soft {
+        color: #ff8fa3; /* パステル系の赤 */
+        transition: all 0.3s ease;
+        opacity: 0.8;
+    }
+    .error-icon-soft:hover {
+        color: #ff6b81;
+        opacity: 1;
+        transform: scale(1.1);
+    }
+    
+    /* フェードアウトアニメーション用 */
+    .fade-out {
+        opacity: 0;
+        transition: opacity 0.5s ease;
+        pointer-events: none;
+    }
+</style>
+
+<div class="row justify-content-center align-items-center" style="min-height: 70vh;">
+    <div class="col-md-8 col-lg-5">
+        
+        <div class="login-card">
+            <div class="card-body">
+                
+                <div class="text-center mb-5">
+                    <svg width="180" height="48" viewBox="0 0 150 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="brandGradientSignup" x1="0%" y1="100%" x2="100%" y2="0%">
+                                <stop offset="0%" stop-color="#42e695" />
+                                <stop offset="100%" stop-color="#3bb2b8" />
+                            </linearGradient>
+                        </defs>
+                        <path d="M10 5 L0 35 L20 35 L30 5 Z" fill="url(#brandGradientSignup)" opacity="0.2"/>
+                        <path d="M25 5 L15 35 L35 35 L45 5 Z" fill="url(#brandGradientSignup)"/>
+                        <text x="50" y="30" font-family="Arial, sans-serif" font-style="italic" font-weight="800" font-size="26" fill="#1a202c">Sel<tspan fill="url(#brandGradientSignup)">Fit</tspan></text>
+                    </svg>
+                    <p class="text-muted small mt-2 fw-bold opacity-75">アカウント作成</p>
+                </div>
+
+                <form method="post" id="signupForm">
+                    {% csrf_token %}
+                    
+                    {% for field in form %}
+                        <div class="mb-4">
+                            <label for="{{ field.id_for_label }}" class="form-label">
+                                {% if "確認用" in field.label %}
+                                    パスワード<br><span style="font-size: 0.85em; opacity: 0.8;">（確認用）</span>
+                                {% else %}
+                                    {{ field.label }}
+                                {% endif %}
+                            </label>
+                            
+                            <div class="input-wrapper position-relative">
+                                {{ field }}
+                                
+                                {% if field.help_text %}
+                                    <div class="d-none">
+                                        <small class="text-muted">{{ field.help_text }}</small>
+                                    </div>
+                                {% endif %}
+                                
+                                {% if field.errors %}
+                                    <div class="error-icon-wrapper" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-size: 1.1rem; pointer-events: none;">
+                                        <i class="bi bi-exclamation-circle error-icon-soft"></i>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        {% if field.errors %}
+                            <div class="error-msg-container text-danger small text-center mb-3 fw-bold" style="margin-top: -10px;">
+                                {% for error in field.errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    <div class="d-grid gap-2 mt-5">
+                        <button type="submit" class="btn-gradient-login">
+                            登録して始める
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="text-center mt-4 pt-3 border-top">
+                    <p class="mb-0">
+                        <a href="{% url 'accounts:login' %}" class="login-footer-link">
+                            すでにアカウントをお持ちの方はこちら <br><strong>ログイン</strong>
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 1. 入力欄のデザイン適用
+        var inputs = document.querySelectorAll('input:not([type="checkbox"]):not([type="radio"]), select, textarea');
+        inputs.forEach(function(input) {
+            input.classList.add('form-control');
+            
+            // 2. ★追加: 入力時にエラー表示を消す処理
+            input.addEventListener('input', function() {
+                // 親要素(.input-wrapper)を探す
+                var wrapper = this.closest('.input-wrapper');
+                if (wrapper) {
+                    // その中のアイコンを探して消す
+                    var icon = wrapper.querySelector('.error-icon-wrapper');
+                    if (icon) {
+                        icon.classList.add('fade-out'); // ふわっと消す
+                        setTimeout(() => icon.remove(), 500); // アニメーション後にDOMから削除
+                    }
+                }
+
+                // 対応するエラーメッセージを探して消す
+                // 構造: div.mb-4 の直後に div.error-msg-container がある
+                var mb4 = this.closest('.mb-4');
+                if (mb4 && mb4.nextElementSibling && mb4.nextElementSibling.classList.contains('error-msg-container')) {
+                    var msg = mb4.nextElementSibling;
+                    msg.classList.add('fade-out');
+                    setTimeout(() => msg.remove(), 500);
+                }
+            });
+        });
+
+        // 3. パスワード表示切り替え機能
+        document.querySelectorAll('input[type="password"]').forEach(function(input) {
+            var wrapper = input.closest('.input-wrapper');
+            if (wrapper) {
+                // トグルボタン生成
+                var toggleBtn = document.createElement('button');
+                toggleBtn.type = 'button';
+                toggleBtn.className = 'btn border-0 bg-transparent position-absolute top-50 end-0 translate-middle-y text-muted shadow-none';
+                toggleBtn.style.zIndex = '10';
+                toggleBtn.style.padding = '0 12px';
+                toggleBtn.innerHTML = '<i class="bi bi-eye-slash"></i>';
+                
+                // 入力欄の右パディングを確保（文字がアイコンに被らないように）
+                input.style.paddingRight = '45px';
+
+                // エラーアイコンがある場合、位置を左にずらす
+                var errorIcon = wrapper.querySelector('.error-icon-wrapper');
+                if (errorIcon) {
+                    errorIcon.style.right = '45px';
+                }
+
+                // クリックイベント
+                toggleBtn.addEventListener('click', function() {
+                    if (input.type === 'password') {
+                        input.type = 'text';
+                        this.innerHTML = '<i class="bi bi-eye"></i>';
+                        this.classList.remove('text-muted');
+                        this.classList.add('text-primary');
+                    } else {
+                        input.type = 'password';
+                        this.innerHTML = '<i class="bi bi-eye-slash"></i>';
+                        this.classList.remove('text-primary');
+                        this.classList.add('text-muted');
+                    }
+                });
+
+                wrapper.appendChild(toggleBtn);
+            }
+        });
+    });
+</script>
+{% endblock %}

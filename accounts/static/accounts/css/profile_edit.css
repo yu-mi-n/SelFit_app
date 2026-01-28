@@ -1,0 +1,291 @@
+/* static/css/dashboard.css */
+
+/* =========================================
+   SelFit 共通テーマ設定
+   ========================================= */
+:root {
+    /* SNSやミッションと同じエメラルドグリーンのグラデーション */
+    --brand-gradient: linear-gradient(135deg, #42e695 0%, #3bb2b8 100%);
+    --brand-color-main: #3bb2b8;
+    --brand-shadow: rgba(66, 230, 149, 0.4);
+    
+    /* テキストカラー */
+    --text-dark: #2d3748;
+    --text-muted: #718096;
+}
+
+body {
+    background-color: #f8f9fa;
+    font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', sans-serif;
+}
+
+/* =========================================
+   カードデザイン (Card)
+   ========================================= */
+.dashboard-card {
+    background: #ffffff;
+    border: none;
+    border-radius: 24px; /* 丸みを強く */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+    transition: transform 0.2s, box-shadow 0.2s;
+    overflow: hidden;
+    height: 100%;
+    position: relative;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+}
+
+/* カードヘッダー */
+.card-header-clean {
+    background: #ffffff;
+    border-bottom: 1px solid #f0f0f0;
+    padding: 20px 24px;
+    font-weight: 700;
+    color: var(--text-dark);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* ブランドカラーヘッダー（ミッションなど） */
+.card-header-brand {
+    background: var(--brand-gradient);
+    color: white;
+    padding: 16px 24px;
+    border-bottom: none;
+    font-weight: 700;
+}
+
+/* =========================================
+   サマリーエリア (体重・変化)
+   ========================================= */
+.summary-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #a0aec0;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.summary-value {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--text-dark);
+    line-height: 1;
+}
+
+.summary-unit {
+    font-size: 1rem;
+    color: #cbd5e0;
+    font-weight: 600;
+    margin-left: 4px;
+}
+
+/* =========================================
+   ミッションリスト
+   ========================================= */
+.mission-list-item {
+    padding: 16px 24px;
+    border-bottom: 1px solid #f7fafc;
+    transition: background-color 0.2s;
+}
+.mission-list-item:last-child {
+    border-bottom: none;
+}
+.mission-list-item:hover {
+    background-color: #fafbfc;
+}
+
+/* =========================================
+   グラフエリア
+   ========================================= */
+.chart-controls {
+    background: #fcfcfc;
+    padding: 12px 20px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.form-control-sm, .form-select-sm {
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    background-color: #ffffff;
+}
+
+/* ズームボタン */
+.btn-zoom {
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    padding: 4px 12px;
+    border-radius: 20px;
+    transition: all 0.2s;
+}
+.btn-zoom:hover {
+    background: #f7fafc;
+}
+.btn-zoom.active {
+    background: var(--text-dark);
+    color: #ffffff;
+    border-color: var(--text-dark);
+}
+
+/* =========================================
+   最近の記録 (Grid)
+   ========================================= */
+.record-card-img {
+    height: 200px;
+    object-fit: cover;
+    width: 100%;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.record-date-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    backdrop-filter: blur(4px);
+}
+
+/* =========================================
+   ボタン類
+   ========================================= */
+
+.btn-gradient {
+  background: var(--brand-gradient) !important;
+  border: none;
+  color: white;
+  font-weight: 700;
+  box-shadow: 0 4px 15px var(--brand-shadow);
+  transition: all 0.3s;
+}
+
+.btn-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px var(--brand-shadow);
+    color: white;
+    opacity: 0.95;
+}
+/* メインアクションボタン（記録をつける） */
+.btn-fab-main {
+    background: var(--brand-gradient);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 10px 24px;
+    font-weight: 700;
+    box-shadow: 0 4px 15px var(--brand-shadow);
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-fab-main:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px var(--brand-shadow);
+    color: white;
+}
+
+/* 達成ボタン */
+.btn-achieve {
+    border: 1px solid #42e695;
+    color: #42e695;
+    background: #ffffff;
+    border-radius: 50px;
+    padding: 4px 16px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    transition: all 0.2s;
+}
+.btn-achieve:hover {
+    background: #42e695;
+    color: #ffffff;
+}
+
+/* =========================================
+   フォーム入力 (Forms)
+   ========================================= */
+.form-control, .form-select {
+    border: 2px solid #edf2f7;
+    border-radius: 12px;
+    padding: 12px 15px;
+    background-color: #fcfcfc;
+    transition: all 0.2s;
+    font-size: 0.95rem;
+    color: var(--text-dark);
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--brand-color-main); /* 緑系 */
+    background-color: #ffffff;
+    box-shadow: 0 0 0 4px rgba(66, 230, 149, 0.15); /* ふんわりした緑の光 */
+    outline: none;
+}
+
+.form-label {
+    font-weight: 700;
+    color: var(--text-dark);
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* ファイル入力のカスタマイズ */
+.form-control[type="file"] {
+    padding: 10px;
+    background-color: #ffffff;
+}
+
+/* チェックボックス・ラジオボタン */
+.form-check-input:checked {
+    background-color: var(--brand-color-main);
+    border-color: var(--brand-color-main);
+}
+
+/* アイコンクリックエリア */
+.icon-trigger {
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.icon-trigger:hover .main-icon {
+    opacity: 0.8;
+}
+
+.icon-trigger:hover .camera-icon-wrapper {
+    background-color: #f0f0f0 !important;
+    transform: scale(1.1);
+    transition: transform 0.2s;
+}
+
+/* プライバシー設定項目（リスト行） */
+.privacy-setting-item {
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.privacy-setting-item:hover {
+    background-color: #f8f9fa !important; /* ホバー時に少し明るく */
+}
+
+/* チェックボックスの拡大 */
+.privacy-setting-item input[type="checkbox"] {
+    transform: scale(1.3);
+    margin-left: 10px;
+    cursor: pointer;
+}

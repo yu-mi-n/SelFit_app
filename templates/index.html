@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/top.css' %}">
+
+<style>
+    /* スマホ画面対応 */
+    @media (max-width: 560px) {
+        .hero-section {
+            /* 背景画像をスマホ用に切り替え・左寄せ */
+            background-image: url("{% static 'images/selfit_MV(smartphone).png' %}") !important;
+            background-position: left top !important;
+            padding: 70px 20px 40px !important; /* 上の余白を詰めて全体を上に */
+            min-height: auto; /* 高さを自動調整 */
+        }
+        .hero-title {
+            font-size: 1.7rem !important; /* タイトルサイズ縮小 */
+            line-height: 1.3;
+        }
+        .hero-lead {
+            font-size: 0.95rem !important; /* リード文サイズ縮小 */
+            margin-top: 1rem !important; /* 余白を詰める */
+        }
+        .hero-lead br {
+            display: none; /* スマホでは改行を無効化して自然な折り返しに */
+        }
+        .btn-action {
+            width: 100%; /* ボタンを幅いっぱいに */
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        /* 「1分でかんたん登録」などの下部テキストのマージンを詰める */
+        .hero-content .mt-4 {
+            margin-top: 1rem !important;
+        }
+        .features-section {
+            margin-top: -30px; /* カード位置を上げる */
+            position: relative;
+            z-index: 2;
+        }
+    }
+</style>
+
+<div class="hero-section text-center">
+    <div class="hero-overlay"></div>
+    
+    <div class="hero-content">
+        <h1 class="hero-title">
+            <span class="d-block mb-2" style="font-size: 0.6em; opacity: 0.9;">見た目重視のボディメイク</span>
+            鏡を見るのが、<br>楽しみになる毎日へ。
+        </h1>
+        <p class="hero-lead">
+            体重計の数字に一喜一憂するのはもう終わり。<br>
+            SelFitは、あなたの身体の「見た目」の変化を記録し、<br>
+            理想の自分への道のりを可視化するパートナーです。
+        </p>
+
+        {% if not user.is_authenticated %}
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <a href="{% url 'accounts:signup' %}" class="btn btn-primary btn-action shadow">
+                    無料で始める
+                </a>
+                <a href="{% url 'accounts:login' %}" class="btn btn-outline-light btn-action" style="border-width: 2px;">
+                    ログイン
+                </a>
+            </div>
+            <p class="mt-4 small opacity-75 fw-bold">✨ 1分でかんたん登録！</p>
+        {% else %}
+            <a href="{% url 'records:index' %}" class="btn btn-primary btn-action shadow">
+                マイページへ進む
+            </a>
+            <p class="mt-4 small">おかえりなさい、{{ user.username }}さん！</p>
+        {% endif %}
+    </div>
+</div>
+<div class="features-section">
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="feature-card">
+                <div class="feature-icon">📸</div>
+                <h3 class="feature-title">見た目を記録</h3>
+                <p class="feature-desc">
+                    日々の体型写真をアルバムに保存。<br>
+                    「タイムラプス機能」を使えば、<br>
+                    身体が引き締まっていく過程を<br>
+                    アニメーションで実感できます。
+                </p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3 class="feature-title">変化を分析</h3>
+                <p class="feature-desc">
+                    体重と体脂肪率をグラフ化。<br>
+                    写真と照らし合わせることで、<br>
+                    「体重は減ってないけど見た目は痩せた」<br>
+                    といったポジティブな変化に気づけます。
+                </p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-card">
+                <div class="feature-icon">🥗</div>
+                <h3 class="feature-title">食事も管理</h3>
+                <p class="feature-desc">
+                    食事の写真も手軽に記録。<br>
+                    カメラ機能でサッと撮影して、<br>
+                    毎日の食生活を振り返りましょう。<br>
+                    無理なく健康的な習慣が身につきます。
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

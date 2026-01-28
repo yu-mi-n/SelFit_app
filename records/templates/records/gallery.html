@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content  %}
+<link rel="stylesheet" href="{% static 'css/gallery.css' %}">
+
+    <div class="text-center mb-4">
+        <h1 class="gallery-title">
+            <span class="title-icon">📷</span> Record Gallery
+        </h1>
+        <p class="text-muted small">日々の記録を振り返りましょう</p>
+    </div>
+
+    <div class="filter-section">
+      <form method="get" action="">
+        <div class="date-group">
+            <label class="filter-label">期間</label>
+            <input type="date" name="start_date" value="{{ start_date_value }}" class="date-input">
+            <span class="separator">〜</span>
+            <input type="date" name="end_date" value="{{ end_date_value }}" class="date-input">
+        </div>
+        
+        <div class="btn-group">
+            <button type="submit" class="filter-btn">絞り込む</button>
+            <a href="{% url 'records:gallery' %}" class="clear-btn">クリア</a>
+        </div>
+      </form>
+    </div>
+
+    {% if period_summary %}
+      <div class="summary-card fade-in">
+        <p class="summary-title">THIS PERIOD</p>
+        <div class="summary-content">
+            <span class="summary-diff {% if period_summary.is_decrease %}decrease{% endif %}">
+                {{ period_summary.sign }}{{ period_summary.diff }}<span class="unit">kg</span>
+            </span>
+            <div class="summary-detail-wrapper">
+                <span class="summary-detail">
+                    Start {{ period_summary.start_weight }} <i class="bi bi-arrow-right-short"></i> End {{ period_summary.end_weight }}
+                </span>
+            </div>
+        </div>
+      </div>
+    {% endif %}
+
+    <button id="playBtn" class="play-btn shadow-sm">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="5 3 19 12 5 21 5 3"></polygon>
+      </svg>
+      <span>軌跡を再生する</span>
+    </button>
+
+    <div id="gallery" class="gallery-container">
+        </div>
+
+    <div id="flipbookModal">
+        <span id="closeBtn" class="close-btn-custom">&times;</span>
+        
+        <div class="frame-outer">
+            <div class="frame-gold-rim">
+                <div class="frame-mat">
+                    <img id="flipImage" class="frame-image" src="" alt="スライドショー画像">
+                </div>
+            </div>
+            <div class="frame-plate">
+                <div class="frame-plate-inner">
+                    <div id="flipDate" style="font-size: 0.9rem; opacity: 0.9;"></div>
+                    <div id="flipWeight" style="font-size: 1.3rem; font-weight: bold;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 再生速度スライダー -->
+        <div class="speed-control-container text-white fade-in">
+            <label for="speedRange" class="form-label small mb-1 d-block text-center opacity-75" style="font-size: 0.75rem;">再生速度</label>
+            <div class="d-flex align-items-center gap-3">
+                <span class="small opacity-75"><i class="bi bi-turtle"></i></span>
+                <input type="range" class="form-range" id="speedRange" min="1" max="20" value="10" style="width: 200px; cursor: pointer;">
+                <span class="small opacity-75"><i class="bi bi-rocket-takeoff"></i></span>
+            </div>
+        </div>
+    </div>
+
+    {{ records_json|json_script:"records-data" }}
+    <script src="{% static 'js/gallery.js' %}"></script>
+
+{% endblock %}

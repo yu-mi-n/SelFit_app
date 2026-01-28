@@ -1,0 +1,202 @@
+{% load static %}
+
+<div class="modal fade" id="detailModal-{{ record.id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 24px; overflow: hidden;">
+            
+            <div class="card-header-brand d-flex justify-content-between align-items-center py-3"
+                 style="background: linear-gradient(135deg, #42e695 0%, #3bb2b8 100%);">
+                <h5 class="modal-title fw-bold text-white">
+                    <i class="bi bi-calendar-check me-2"></i>{{ record.date|date:"Y年n月j日" }}
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body p-4 bg-light">
+                
+                <div class="row g-3 text-center mb-4">
+                    <div class="col-6">
+                        <div class="p-4 bg-white rounded-4 shadow-sm h-100 d-flex flex-column justify-content-center">
+                            <span class="text-muted small fw-bold ls-1 mb-1">WEIGHT</span>
+                            <div class="d-flex justify-content-center align-items-baseline" style="color: #3bb2b8;">
+                                <span class="h2 fw-bold mb-0">{% if record.weight %}{{ record.weight }}{% else %}--{% endif %}</span>
+                                <span class="small ms-1 fw-bold">kg</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-4 bg-white rounded-4 shadow-sm h-100 d-flex flex-column justify-content-center">
+                            <span class="text-muted small fw-bold ls-1 mb-1">BODY FAT</span>
+                            <div class="d-flex justify-content-center align-items-baseline" style="color: #42e695;">
+                                <span class="h2 fw-bold mb-0">{% if record.body_fat %}{{ record.body_fat }}{% else %}--{% endif %}</span>
+                                <span class="small ms-1 fw-bold">%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {% if record.conditions.all %}
+                <div class="mb-4 text-center">
+                    {% for condition in record.conditions.all %}
+                        <span class="badge rounded-pill bg-white text-dark border shadow-sm me-1 px-3 py-2">
+                            {{ condition.icon }} {{ condition.name }}
+                        </span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                {% if record.note %}
+                <div class="mb-4">
+                    <div class="p-3 bg-white rounded-3 shadow-sm border-start border-4 border-info">
+                        <p class="text-secondary mb-0 small" style="white-space: pre-wrap; line-height: 1.6;">{{ record.note }}</p>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="mb-4">
+                    <h6 class="fw-bold text-dark mb-3">
+                        <i class="bi bi-trophy-fill text-warning me-2"></i>達成したミッション
+                    </h6>
+                    
+                    {% with mission_logs=record.get_mission_logs %}
+                    {% if mission_logs %}
+                        <div class="list-group shadow-sm rounded-3 overflow-hidden border-0">
+                            {% for log in mission_logs %}
+                                <div class="list-group-item border-0 border-bottom p-3 d-flex align-items-center">
+                                    <div class="me-3 d-flex align-items-center justify-content-center rounded-circle text-white fw-bold shadow-sm"
+                                         style="width: 40px; height: 40px; 
+                                         background-color: {% if log.mission.difficulty == 1 %}#42e695{% elif log.mission.difficulty == 2 %}#3bb2b8{% else %}#ffb347{% endif %};">
+                                        Lv{{ log.mission.difficulty }}
+                                    </div>
+                                    
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-0 fw-bold text-dark">{{ log.mission.title }}</h6>
+                                        {% if log.comment %}
+                                            <small class="text-muted"><i class="bi bi-chat-quote me-1"></i>{{ log.comment }}</small>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="text-end">
+                                        <span class="badge bg-light text-secondary border rounded-pill">
+                                            +{% if log.mission.difficulty == 1 %}5{% elif log.mission.difficulty == 2 %}7{% else %}10{% endif %} exp
+                                        </span>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-3 bg-light rounded-3 border border-dashed">
+                            <small class="text-muted">達成したミッションはありません</small>
+                        </div>
+                    {% endif %}
+                    {% endwith %} </div>
+
+                <div class="mb-2">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <h6 class="fw-bold m-0 text-dark"><i class="bi bi-cup-straw text-warning me-2"></i>食事の記録</h6>
+                        
+                        <a href="{% url 'records:add_meal' record.id %}" class="btn btn-sm btn-outline-brand rounded-pill px-3 fw-bold">
+                            <i class="bi bi-plus-lg me-1"></i>追加
+                        </a>
+                    </div>
+                    
+                    {% if record.meals.exists %} 
+                        <div class="row g-3">
+                            {% for meal in record.meals.all %}
+                            <div class="col-md-6">
+                                <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
+                                    <div class="row g-0 h-100">
+                                        <div class="col-4 position-relative">
+                                            {% if meal.image %}
+                                                <img src="{{ meal.image.url }}" class="w-100 h-100" style="object-fit: cover;" alt="食事">
+                                            {% else %}
+                                                <div class="w-100 h-100 bg-light d-flex align-items-center justify-content-center text-muted small">No IMG</div>
+                                            {% endif %}
+                                            <span class="position-absolute top-0 start-0 badge bg-dark bg-opacity-75 m-1 rounded-pill" style="font-size: 0.6rem;">
+                                                {{ meal.get_meal_type_display }}
+                                            </span>
+                                        </div>
+                                        <div class="col-8">
+                                            <div class="card-body p-2 d-flex flex-column h-100 justify-content-center">
+                                                {% if meal.memo %}
+                                                    <p class="card-text small text-muted mb-2 text-truncate">{{ meal.memo }}</p>
+                                                {% else %}
+                                                    <p class="card-text small text-muted mb-2 opacity-50">メモなし</p>
+                                                {% endif %}
+                                                
+                                                <div class="text-end mt-auto">
+                                                    <a href="{% url 'records:meal_edit' meal.id %}" 
+                                                       class="btn btn-sm bg-light text-secondary rounded-pill px-3 py-1 border-0" 
+                                                       style="font-size: 0.75rem; transition: background 0.2s;">
+                                                        <i class="bi bi-pencil-fill me-1" style="font-size: 0.7rem;"></i>編集
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4 border-2 border-dashed rounded-3" style="border-color: #e2e8f0; border-style: dashed;">
+                            <p class="text-muted small mb-0">食事の記録はまだありません</p>
+                        </div>
+                    {% endif %}
+                </div>
+
+            </div>
+
+            <div class="modal-footer justify-content-between border-top-0 pt-0 bg-light pb-4 px-4">
+                <form action="{% url 'records:delete' record.pk %}" method="post" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-soft-danger rounded-pill px-3 py-2 small" 
+                            onclick="return confirm('本当にこの日の記録を削除しますか？\n（食事データも削除されます）');">
+                        <i class="bi bi-trash me-1"></i>記録を削除
+                    </button>
+                </form>
+                
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">閉じる</button>
+                    <a href="{% url 'records:edit' record.pk %}" class="btn btn-gradient rounded-pill px-4 shadow-sm"
+                       style="background: linear-gradient(135deg, #42e695 0%, #3bb2b8 100%); color: white; border: none;">
+                        編集する
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    .btn-outline-brand {
+        border: 2px solid #3bb2b8;
+        color: #3bb2b8;
+        background: transparent;
+        transition: all 0.3s;
+    }
+    .btn-outline-brand:hover {
+        background-color: #3bb2b8;
+        color: white;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(59, 178, 184, 0.2);
+    }
+
+    .btn-soft-danger {
+        background-color: rgba(220, 53, 69, 0.08);
+        color: #dc3545;
+        border: none;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+    .btn-soft-danger:hover {
+        background-color: #dc3545;
+        color: white;
+        transform: translateY(-1px);
+    }
+    
+    .btn-light:hover {
+        background-color: #e2e6ea !important;
+    }
+</style>

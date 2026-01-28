@@ -1,0 +1,192 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}?v=SELFIT_V4">
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="dashboard-card border-0 shadow-lg">
+            
+            <div class="card-header-brand d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-cup-hot-fill"></i>
+                    <h5 class="mb-0 fw-bold">食事を追加</h5>
+                </div>
+                <small class="opacity-75 font-monospace">{{ record.date|date:"m/d" }}</small>
+            </div>
+
+            <div class="card-body p-4">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    {% if form.errors %}
+                        <div class="alert alert-danger border-0 shadow-sm rounded-3 mb-4">
+                            <i class="bi bi-exclamation-circle-fill me-2"></i>入力内容を確認してください。
+                        </div>
+                    {% endif %}
+
+                    <div class="mb-4 p-4 rounded-4" style="background-color: #f8fafc; border: 2px dashed #cbd5e0;">
+                        <label class="form-label text-dark fw-bold mb-3 d-block ps-2">
+                            📸 食事の写真 
+                            <span class="badge badge-required ms-2 rounded-pill small">必須</span>
+                        </label>
+
+                        <div class="d-none">
+                            {{ form.image }}
+                        </div>
+
+                        <div class="row g-3 justify-content-center">
+                            <div class="col-6">
+                                <button type="button" class="btn btn-white w-100 py-2 rounded-4 shadow-sm border d-flex flex-column align-items-center gap-1 action-btn" 
+                                        id="startCameraBtn">
+                                    <div class="icon-circle bg-brand-light text-brand">
+                                        <i class="bi bi-camera-fill fs-5"></i>
+                                    </div>
+                                    <span class="small fw-bold text-secondary">カメラで撮影</span>
+                                </button>
+                            </div>
+                            <div class="col-6">
+                                <button type="button" class="btn btn-white w-100 py-2 rounded-4 shadow-sm border d-flex flex-column align-items-center gap-1 action-btn" 
+                                        onclick="document.querySelector('input[name=\'{{ form.image.name }}\']').click();">
+                                    <div class="icon-circle bg-gray-light text-dark">
+                                        <i class="bi bi-images fs-5"></i>
+                                    </div>
+                                    <span class="small fw-bold text-secondary">アルバムから</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="mt-3 text-center">
+                            <img id="imagePreview" src="#" alt="プレビュー" 
+                                class="img-fluid rounded-3 shadow-sm border mt-2"
+                                style="display: none; max-height: 300px; max-width: 100%; object-fit: cover;">
+                            <p id="fileNameDisplay" class="small text-muted mt-2 mb-0" style="display: none;"></p>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                      <label class="form-label fw-bold small text-muted">🕒 食事のタイミング</label>
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for radio in form.meal_type %}
+                                <div class="form-check form-check-inline m-0">
+                                    {{ radio.tag }}
+                                    <label class="btn btn-outline-light text-dark border-0 bg-white shadow-sm rounded-pill px-3 py-2 small" 
+                                           for="{{ radio.id_for_label }}" style="cursor: pointer; min-width: 80px;">
+                                        {{ radio.choice_label }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="mb-5">
+                        <label class="form-label fw-bold small text-muted">📝 メモ・詳細</label>
+                        {{ form.memo }}
+                        <div class="form-text">カロリーや食べた量などを記録しましょう。</div>
+                    </div>
+
+                    <div class="d-grid gap-3">
+                        <button type="submit" class="btn btn-gradient btn-lg rounded-pill shadow-sm py-3 fw-bold">
+                            保存する
+                        </button>
+                        <a href="{% url 'records:index' %}" class="btn btn-link text-secondary text-decoration-none text-center small">
+                            キャンセル
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="cameraModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white border-secondary">
+            <div class="modal-header border-secondary py-2">
+                <h6 class="modal-title"><i class="bi bi-camera-fill me-2"></i>食事を撮影</h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center p-0 position-relative bg-black">
+                <video id="cameraVideo" autoplay playsinline style="width: 100%; max-height: 60vh; object-fit: contain;"></video>
+                <canvas id="cameraCanvas" style="display: none;"></canvas>
+            </div>
+            <div class="modal-footer border-secondary position-relative d-flex justify-content-center py-4 bg-dark">
+                <button type="button" class="btn btn-outline-light rounded-circle position-absolute start-0 ms-4" 
+                        id="switchCameraBtn" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;">
+                    <i class="bi bi-arrow-repeat fs-5"></i>
+                </button>
+                <button type="button" class="btn btn-light rounded-circle p-1 shadow" id="shutterBtn" style="width: 64px; height: 64px;">
+                    <div class="w-100 h-100 bg-white rounded-circle border border-4 border-dark d-flex align-items-center justify-content-center">
+                        <div style="width: 48px; height: 48px; background: #ff4757; border-radius: 50%;"></div>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/meal_camera.js' %}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const fileInput = document.querySelector('input[name="{{ form.image.name }}"]');
+        const preview = document.getElementById('imagePreview');
+        
+        fileInput.addEventListener('change', function(e) {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                }
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+    });
+</script>
+
+<style>
+    /* このページ専用のスタイル */
+    .form-check-input { display: none; }
+    .form-check-input:checked + label {
+        background-color: #e6fffa !important;
+        border: 2px solid #3bb2b8 !important;
+        color: #2c7a7b !important;
+        font-weight: bold;
+        box-shadow: 0 4px 12px rgba(59, 178, 184, 0.2) !important;
+    }
+    .form-check-input + label {
+        border: 2px solid transparent !important;
+        transition: all 0.2s;
+    }
+    
+    .action-btn {
+        transition: transform 0.2s, background-color 0.2s;
+        background-color: #fff;
+    }
+    .action-btn:active {
+        transform: scale(0.98);
+        background-color: #f8f9fa;
+    }
+    
+    /* ★修正: アイコンサークルのサイズを縮小 (48px -> 38px) */
+    .icon-circle {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 2px; /* マージンも少し削減 */
+    }
+    .bg-brand-light { background-color: rgba(59, 178, 184, 0.1); }
+    .text-brand { color: #3bb2b8; }
+    .bg-gray-light { background-color: #f1f3f5; }
+
+    .badge-required {
+        background-color: #fff5f5; 
+        color: #ff4757;             
+        border: 1px solid #ffc9c9;  
+    }
+</style>
+{% endblock %}

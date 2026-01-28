@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'missions/css/mission.css' %}">
+
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        
+        <div class="mission-card">
+            <div class="mission-header">
+                <div class="mission-icon-wrapper">
+                    <i class="bi bi-trophy-fill" style="font-size: 2.5rem; color: #fff;"></i>
+                </div>
+                <h4 class="mb-0 mission-title-text">Congratulations!</h4>
+                <p class="mb-0 small opacity-75 fw-bold">ミッション達成おめでとうございます🎉</p>
+            </div>
+
+            <div class="mission-body text-center">
+                
+                <div class="mb-4">
+                    <h5 class="mission-name">{{ mission.title }}</h5>
+                    <div class="d-inline-block px-3 py-1 bg-light rounded-pill text-muted small mb-3 fw-bold border">
+                        難易度: 
+                        {% with ''|center:mission.difficulty as range %}
+                            {% for _ in range %}★{% endfor %}
+                        {% endwith %}
+                    </div>
+                    <p class="mission-desc">{{ mission.description }}</p>
+                </div>
+                
+                <hr class="my-4 text-muted opacity-25">
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-4 text-start">
+                        <label class="form-label">
+                            <i class="bi bi-chat-dots-fill text-success me-1"></i> 一言コメント（任意）
+                        </label>
+                        <input type="text" name="comment" class="form-control" placeholder="例：キツかったけど達成感すごい！">
+                        <div class="form-text text-muted small ms-1">
+                            後から振り返るときに役立ちます
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-3">
+                        <button type="submit" class="btn-complete">
+                            達成を記録する <i class="bi bi-check-lg"></i>
+                        </button>
+                        
+                        <a href="{% url 'records:index' %}" class="btn btn-link text-secondary text-decoration-none fw-bold" style="font-size: 0.9rem;">
+                            キャンセルして戻る
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+    </div>
+</div>
+{% endblock %}

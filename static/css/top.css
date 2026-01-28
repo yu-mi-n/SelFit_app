@@ -1,0 +1,133 @@
+/* --- ヒーローエリア（画像背景版） --- */
+.hero-section {
+
+    position: relative;
+
+    /* 例: Unsplashからのフィットネス系フリー画像 */
+    background-image: url('../images/selfit_MV.png');
+
+    
+    background-size: cover;      /* 枠に合わせて画像を拡大縮小 */
+    background-position: center; /* 画像の中央を表示 */
+    color: white;
+    padding: 140px 20px 100px;   /* 上の余白を広げて迫力を出す */
+    margin-top: -24px;
+    
+    /* 下部の角丸は、画像だと少し違和感が出る場合があるので一旦削除（お好みで戻してもOK） */
+    /* border-radius: 0 0 50px 50px; */
+    
+    overflow: hidden;
+    /* 画像が表示されるまでの代替背景色 */
+    background-color: #333;
+
+    /* 1. 画面の幅いっぱいにする */
+    width: 100vw; 
+    
+    /* 2. 親要素（container）の制約を無視して左右に広げる計算式 */
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    
+    /* 3. 横スクロールバーが出ないようにする */
+    max-width: 100vw;
+}
+
+/* --- 画像の上に重ねる暗いフィルター --- */
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* 上から下への暗いグラデーション。文字を読みやすくする重要パーツ */
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.7) 100%);
+    z-index: 1; /* 画像の上、コンテンツの下 */
+}
+
+/* --- コンテンツ（文字とボタン） --- */
+.hero-content {
+    position: relative;
+    z-index: 2; /* 最前面に配置 */
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    letter-spacing: 0.05em;
+    /* 画像背景なので影を強めに入れて視認性を高める */
+    text-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    line-height: 1.2;
+}
+
+.hero-lead {
+    font-size: 1.3rem;
+    margin-bottom: 3rem;
+    opacity: 0.95;
+    line-height: 1.8;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    font-weight: 500;
+}
+
+/* --- アクションボタン --- */
+.btn-action {
+    padding: 15px 45px; /* 少し大きめに */
+    font-size: 1.2rem;
+    border-radius: 50px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+/* Bootstrapのprimaryカラーを上書きして、よりフィットネスらしい色にする例 */
+.btn-primary {
+    /* 鮮やかな青緑系のグラデーションボタン */
+    background: linear-gradient(135deg, #00b09b 0%, #96c93d 100%);
+    border: none;
+}
+.btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0, 176, 155, 0.4);
+    filter: brightness(1.1);
+}
+
+.btn-outline-light:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-3px);
+}
+
+
+/* --- 特徴セクション（微調整） --- */
+.features-section {
+    padding: 100px 20px; /* 余白を少し広めに */
+    max-width: 1100px;
+    margin: 0 auto;
+    background-color: none; /* 背景を少しグレーにしてエリアを区切る */
+}
+
+.feature-card {
+    background: white;
+    padding: 50px 30px;
+    border-radius: 24px;
+    text-align: center;
+    height: 100%;
+    transition: transform 0.3s, box-shadow 0.3s;
+    border: none; /* 枠線をなくして影で立体感を出す */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+.feature-card:hover {
+    transform: translateY(-15px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+/* Icon, Title, Desc は以前と同じでOK */
+.feature-icon { font-size: 4rem; margin-bottom: 25px; display: inline-block; }
+.feature-title { font-weight: 800; color: #2c3e50; margin-bottom: 15px; font-size: 1.4rem; letter-spacing: 0.05em; }
+.feature-desc { color: #666; font-size: 1rem; line-height: 1.7; }
+
+/* スマホ調整 */
+@media (max-width: 768px) {
+    .hero-title { font-size: 2.4rem; }
+    .hero-lead { font-size: 1.1rem; }
+    .hero-section { padding: 100px 20px 60px; }
+}
