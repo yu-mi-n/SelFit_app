@@ -155,6 +155,7 @@ def index(request):
     body_fats = []
     condition_emojis = []
     date_ranges = []
+    has_photos = []
 
     if interval == 'weekly':
         # 週次集計
@@ -170,6 +171,7 @@ def index(request):
                 weights.append(round(d['avg_weight'], 1) if d['avg_weight'] else None)
                 body_fats.append(round(d['avg_fat'], 1) if d['avg_fat'] else None)
                 condition_emojis.append("")
+                has_photos.append(False)
 
                 # start が datetime型か date型かによって挙動が変わるため、date()に変換して統一すると安全です
                 start_date = start.date() if isinstance(start, datetime.datetime) else start
@@ -190,6 +192,7 @@ def index(request):
                 weights.append(round(d['avg_weight'], 1) if d['avg_weight'] else None)
                 body_fats.append(round(d['avg_fat'], 1) if d['avg_fat'] else None)
                 condition_emojis.append("")
+                has_photos.append(False)
 
                 # 月末日を計算して文字列作成
                 start_date = start.date() if isinstance(start, datetime.datetime) else start
@@ -207,6 +210,7 @@ def index(request):
             body_fats.append(float(r.body_fat) if r.body_fat else None)
             condition_emojis.append("".join([tag.icon for tag in r.conditions.all() if tag.icon]))
             date_ranges.append(r.date.strftime('%Y/%m/%d'))
+            has_photos.append(bool(r.photo))
 
 
     # --- リスト表示用（ページネーションなど） ---
@@ -249,6 +253,7 @@ def index(request):
         'body_fats_json': json.dumps(body_fats),
         'condition_emojis_json': json.dumps(condition_emojis),
         'date_ranges_json': json.dumps(date_ranges),
+        'has_photos_json': json.dumps(has_photos),
         'healthy_range_json': json.dumps(healthy_range),
         'target_weight': target_weight,
         
@@ -270,6 +275,17 @@ def record_add(request):
             record.save()
             form.save_m2m()
             
+            # --- 目標達成判定 ---
+            target_weight = getattr(request.user, 'target_weight', None)
+            if target_weight and record.weight is not None:
+                # 今回の記録が目標以下か
+                if record.weight <= target_weight:
+                    # 前回（今回の記録を除く最新）の記録を取得して、前回は未達成だったか確認
+                    prev_record = DailyRecord.objects.filter(user=request.user).exclude(id=record.id).order_by('-date', '-created_at').first()
+                    # 初回記録で達成、または前回は目標より重かった場合に祝う
+                    if not prev_record or (prev_record.weight is not None and prev_record.weight > target_weight):
+                        messages.success(request, 'Goal Achieved!', extra_tags='goal_achieved_event')
+
             # 記録ボーナス（旧ログインボーナス）
             today = datetime.date.today()
             if record.date == today and request.user.last_login_bonus_date != today:
@@ -330,6 +346,15 @@ def record_edit(request, pk):
         form = DailyRecordForm(request.POST, request.FILES, instance=record, user=request.user)
         if form.is_valid():
             form.save()
+            
+            # --- 目標達成判定 ---
+            target_weight = getattr(request.user, 'target_weight', None)
+            if target_weight and record.weight is not None:
+                if record.weight <= target_weight:
+                    prev_record = DailyRecord.objects.filter(user=request.user).exclude(id=record.id).order_by('-date', '-created_at').first()
+                    if not prev_record or (prev_record.weight is not None and prev_record.weight > target_weight):
+                        messages.success(request, 'Goal Achieved!', extra_tags='goal_achieved_event')
+
             return redirect('records:index')
     else:
         form = DailyRecordForm(instance=record, user=request.user)

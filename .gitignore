@@ -21,3 +21,7 @@ env/
 .DS_Store
 .vscode/
 .idea/
+
+# demo data
+.demo_images/
+.records/management/

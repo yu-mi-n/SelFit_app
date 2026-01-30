@@ -12,7 +12,11 @@ class CustomUserCreationForm(UserCreationForm): # ユーザー登録
     class Meta:
         model = CustomUser
         # 登録時に入力させる項目
-        fields = ('username', 'email', 'target_weight')
+        fields = ('username',  'height', 'target_weight') # 'email'
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['height'].required = True
+        self.fields['target_weight'].required = True
 
 class ProfileEditForm(forms.ModelForm): # プロフィール編集
     class Meta:

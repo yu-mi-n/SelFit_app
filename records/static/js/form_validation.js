@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     // 変換対象のIDリスト
-    const targetIds = ['id_weight', 'id_body_fat', 'id_target_weight',];
+    const targetIds = ['id_weight', 'id_body_fat', 'id_target_weight', 'id_height'];
 
     targetIds.forEach(function(id) {
         const input = document.getElementById(id);

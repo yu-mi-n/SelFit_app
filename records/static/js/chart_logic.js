@@ -21,6 +21,54 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let chartInstance = null;
 
+    // ★追加: 星(★)を描画したCanvasを作成する関数
+    function createStarCanvas(color) {
+        const canvas = document.createElement('canvas');
+        canvas.width = 24;
+        canvas.height = 24;
+        const ctx = canvas.getContext('2d');
+        ctx.font = '22px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.strokeStyle = '#ffffff'; // 境界線の色（白）
+        ctx.lineWidth = 3;           // 線の太さ（内側は塗りつぶされるため実質外側1px）
+        ctx.strokeText('★', 12, 10); // 境界線を描画
+        ctx.fillStyle = color;
+        ctx.fillText('★', 12, 10); // 中心に描画
+        return canvas;
+    }
+
+    // 適正範囲内(緑)と範囲外(オレンジ)の星を作成
+    const starGreen = createStarCanvas('#4dd0e1');
+    const starOrange = createStarCanvas('#e6a05c');
+
+    // ★高速化: スタイルを事前に計算して配列化する
+    // 描画のたびに関数を実行するオーバーヘッドを削減します
+    const pointStyles = [];
+    const pointRadii = [];
+    const pointBorderColors = [];
+
+    if (data.weights) {
+        data.weights.forEach((weight, index) => {
+            const hasPhoto = data.hasPhotos && data.hasPhotos[index];
+            const isHealthy = healthyRange && weight !== null && weight >= healthyRange.min && weight <= healthyRange.max;
+
+            // 1. ポイントの形状とサイズ
+            if (hasPhoto) {
+                // 写真あり -> 星形、サイズ大きめ
+                pointStyles.push(isHealthy ? starGreen : starOrange);
+                pointRadii.push(8);
+            } else {
+                // 写真なし -> 丸、サイズ通常
+                pointStyles.push('circle');
+                pointRadii.push(5);
+            }
+
+            // 2. ポイントの枠線色（丸の場合に適用）
+            pointBorderColors.push(isHealthy ? '#4dd0e1' : '#e6a05c');
+        });
+    }
+
     // ========================================================
     // ★ 表示幅の更新関数
     // ========================================================
@@ -62,26 +110,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 {
                     label: '体重 (kg)',
                     data: data.weights,
-                    borderColor: '#ff9f43',
-                    backgroundColor: 'rgba(255, 159, 67, 0.1)',
+                    normalized: true, // データがソート済みであることを明示して描画を高速化
+                    borderColor: '#e6a05c',
+                    backgroundColor: 'rgba(230, 160, 92, 0.1)',
                     borderWidth: 3,
+                    // ★修正: 事前計算した配列を直接渡す（関数呼び出しを回避して高速化）
                     pointBackgroundColor: '#fff',
-                    pointBorderColor: function(context) {
-                        const value = context.raw;
-                        // 適正範囲内なら明るいテーマカラー(#4dd0e1)、それ以外はオレンジ(#ff9f43)
-                        if (healthyRange && value !== null && value >= healthyRange.min && value <= healthyRange.max) {
-                            return '#4dd0e1';
-                        }
-                        return '#ff9f43';
-                    },
-                    pointRadius: 5,
-                    pointHoverRadius: 7,
+                    pointBorderColor: pointBorderColors,
+                    pointStyle: pointStyles,
+                    pointRadius: pointRadii,
+                    
+                    pointHoverRadius: pointRadii, // ホバー時もサイズを変えない
                     tension: 0.3,
                     yAxisID: 'y',
                     spanGaps: true,
                     segment: {
                         borderColor: function(context) {
-                            if (!healthyRange) return '#ff9f43';
+                            if (!healthyRange) return '#e6a05c';
                             const v0 = context.p0.parsed.y;
                             const v1 = context.p1.parsed.y;
                             // 線の両端が適正範囲内ならテーマカラー(#3bb2b8)にする
@@ -89,7 +134,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 v1 >= healthyRange.min && v1 <= healthyRange.max) {
                                 return '#3bb2b8';
                             }
-                            return '#ff9f43';
+                            return '#e6a05c';
                         },
                         // ★追加: 適正範囲内は線を太くして強調
                         borderWidth: function(context) {
@@ -104,12 +149,46 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                     },
                     datalabels: {
-                        align: 'top',
-                        anchor: 'end',
+                        display: 'auto', // ラベルが重なる場合は自動的に非表示にする
+                        // ★変更: 体脂肪率グラフと被る場合は下側に表示する
+                        anchor: 'center', // 中心を基準にする
+                        align: function(context) {
+                            const chart = context.chart;
+                            const index = context.dataIndex;
+                            const weight = context.dataset.data[index];
+                            // 体脂肪率は2番目のデータセット(index 1)
+                            const bodyFatDataset = chart.data.datasets[1];
+                            const bodyFat = bodyFatDataset ? bodyFatDataset.data[index] : null;
+
+                            if (weight !== null && bodyFat !== null && chart.scales.y && chart.scales.y1) {
+                                const yWeight = chart.scales.y.getPixelForValue(weight);
+                                const yBodyFat = chart.scales.y1.getPixelForValue(bodyFat);
+                                
+                                // 体脂肪(yBodyFat)が体重(yWeight)より「上(値が小さい)」にあり、かつ近い場合
+                                // ラベルを上に置くと被るので「下(bottom)」にする
+                                if (yBodyFat < yWeight && (yWeight - yBodyFat) < 40) {
+                                    return 'bottom';
+                                }
+                            }
+                            return 'top'; // 基本は上
+                        },
+                        offset: function(context) {
+                            // 点の半径 + 余白(4px)
+                            const index = context.dataIndex;
+                            const radii = context.dataset.pointRadius;
+                            const r = Array.isArray(radii) ? radii[index] : (radii || 5);
+                            return r + 4;
+                        },
                         textAlign: 'center',
-                        offset: 4,
                         font: { size: 12, weight: 'bold' },
-                        color: '#ff9f43',
+                        color: '#e6a05c',
+                        borderRadius: 4,
+                        padding: {
+                            top: 2,
+                            bottom: 1,
+                            left: 4,
+                            right: 4
+                        },
                         formatter: (value, context) => {
                             if (value === null) return '';
                             if (window.CHART_INTERVAL !== 'daily') return value;
@@ -122,6 +201,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 {
                     label: '体脂肪率 (%)',
                     data: data.bodyFats,
+                    normalized: true, // データがソート済みであることを明示して描画を高速化
                     borderColor: '#4dabf7',
                     backgroundColor: 'transparent',
                     borderWidth: 2,
@@ -137,6 +217,17 @@ document.addEventListener('DOMContentLoaded', function() {
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            animation: false, // ★追加: 初期描画アニメーションも無効化して即時表示
+            // ホバー時のアニメーションを無効化してレスポンスを向上
+            hover: {
+                animationDuration: 0
+            },
+            // インタラクション設定の最適化
+            interaction: {
+                mode: 'nearest',
+                axis: 'x',
+                intersect: true // ポイントにカーソルが乗った時だけ表示
+            },
             
             // ▼▼▼ 修正箇所：plugins の閉じカッコの位置を変更しました ▼▼▼
             plugins: {
@@ -144,6 +235,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // tooltip は plugins の中に入っている必要があります
                 tooltip: {
+                    // ポイントの下側に表示（yAlign: 'top' で吹き出しの矢印が上＝ポイント側を向く）
+                    yAlign: 'top',
                     callbacks: {
                         title: function(context) {
                             const index = context[0].dataIndex;
@@ -168,7 +261,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 label: {
                                     display: true,
                                     content: '適正体重',
-                                    position: 'end',
+                                    position: 'start',
                                     color: 'rgba(0,0,0,0.25)',
                                     font: { size: 11 }
                                 }
@@ -180,16 +273,16 @@ document.addEventListener('DOMContentLoaded', function() {
                                 type: 'line',
                                 yMin: targetWeight,
                                 yMax: targetWeight,
-                                borderColor: '#ff6b6b', // 赤系で強調
-                                borderWidth: 2,
+                                borderColor: 'rgba(255, 107, 107, 0.5)', // 薄く表示
+                                borderWidth: 1,
                                 borderDash: [6, 4], // 点線
                                 label: {
                                     display: true,
                                     content: 'Goal ' + targetWeight + 'kg',
-                                    position: 'start',
+                                    position: 'end',
                                     backgroundColor: 'transparent',
                                     color: '#ff6b6b',
-                                    font: { size: 10, weight: 'bold' },
+                                    font: { size: 7, weight: 'bold' },
                                     yAdjust: -10 // 線の上に表示
                                 }
                             }
