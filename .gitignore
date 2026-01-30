@@ -23,5 +23,5 @@ env/
 .idea/
 
 # demo data
-.demo_images/
-.records/management/
+demo_images/
+records/management/
