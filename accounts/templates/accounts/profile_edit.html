@@ -88,6 +88,12 @@
 
                     {% endfor %}
 
+                    <div class="text-end mt-2 mb-4">
+                        <a href="{% url 'accounts:password_change' %}" class="text-secondary text-decoration-none small">
+                            <i class="bi bi-shield-lock me-1"></i>パスワードを変更する
+                        </a>
+                    </div>
+
                     <div class="d-grid gap-3 mt-5">
                         <button type="submit" class="btn btn-gradient btn-lg rounded-pill shadow-sm py-3 fw-bold">
                             変更を保存する
