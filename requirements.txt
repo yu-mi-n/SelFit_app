@@ -3,7 +3,7 @@ certifi
 charset-normalizer
 cloudinary
 dj-database-url
-Django==5.0.2
+Django
 django-cloudinary-storage
 dotenv
 gunicorn
